@@ -11,6 +11,10 @@ export default function App() {
     setItems((items) => items.filter((item) => item.id !== id));
   }
 
+  /*
+  First: For the item with the id being toggled change the value of the of the packed property.
+  Second: Return the other objects without the id, just as they are.
+  */
   function handleToggleItem(id) {
     setItems((items) =>
       items.map((item) =>
