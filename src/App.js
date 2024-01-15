@@ -11,6 +11,14 @@ export default function App() {
     setItems((items) => items.filter((item) => item.id !== id));
   }
 
+  function handleClearlist() {
+    const confirm = window.confirm(
+      "Are you sure, you want to delete all items"
+    );
+
+    if (confirm) setItems([]);
+  }
+
   /*
   First: For the item with the id being toggled change the value of the of the packed property.
   Second: Return the other objects without the id, just as they are.
@@ -29,8 +37,9 @@ export default function App() {
       <Form onAddItems={handleAddItems} />
       <PackingList
         items={items}
-        onDleteItem={handleDeleteItem}
+        onDeleteItem={handleDeleteItem}
         onToggleItems={handleToggleItem}
+        onClearlist={handleClearlist}
       />
       <Stats items={items} />
     </div>
@@ -57,7 +66,6 @@ function Form({ onAddItems }) {
     if (!description) return;
 
     const newItem = { description, quantity, packed: false, id: Date.now() };
-    console.log(newItem);
 
     onAddItems(newItem);
 
@@ -90,7 +98,7 @@ function Form({ onAddItems }) {
   );
 }
 
-function PackingList({ items, onDleteItem, onToggleItems }) {
+function PackingList({ items, onDeleteItem, onToggleItems, onClearlist }) {
   const [sortBy, setSortBy] = useState("packed");
 
   let sortedItems;
@@ -98,6 +106,7 @@ function PackingList({ items, onDleteItem, onToggleItems }) {
   if (sortBy === "input") sortedItems = items;
 
   if (sortBy === "description")
+    // sorting based on the lexicographical order of the description.
     sortedItems = items
       .slice()
       .sort((a, b) => a.description.localeCompare(b.description));
@@ -114,7 +123,7 @@ function PackingList({ items, onDleteItem, onToggleItems }) {
           <Item
             item={item}
             key={item.id}
-            onDleteItem={onDleteItem}
+            onDeleteItem={onDeleteItem}
             onToggleItems={onToggleItems}
           />
         ))}
@@ -125,12 +134,13 @@ function PackingList({ items, onDleteItem, onToggleItems }) {
           <option value="description">Sort by description </option>
           <option value="packed">Sort by packed status</option>
         </select>
+        <button onClick={onClearlist}>Clear list</button>
       </div>
     </div>
   );
 }
 
-function Item({ item, onDleteItem, onToggleItems }) {
+function Item({ item, onDeleteItem, onToggleItems }) {
   return (
     <li>
       <input
@@ -141,7 +151,7 @@ function Item({ item, onDleteItem, onToggleItems }) {
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
       </span>
-      <button onClick={() => onDleteItem(item.id)}>❌</button>
+      <button onClick={() => onDeleteItem(item.id)}>❌</button>
     </li>
   );
 }
